@@ -88,7 +88,7 @@ func renderVideo(presentation Presentation, config config.Data, infos map[float6
 	}
 	result := modules.Video{}
 	result.VideoPath = path.Join(config.WorkingDir, "slides.mkv")
-	_, err = util.ExecuteCommand("ffmpeg", "-safe", "0", "-hide_banner", "-loglevel", "error", "-f", "concat", "-i", slidesTxtFile, "-threads", config.ThreadCount, "-y", "-strict", "-2", "-crf", "0", "-t", fmt.Sprint(durationReal), "-c:v", "libaom-av1", result.VideoPath).Output()
+	_, err = util.ExecuteCommand("ffmpeg", "-safe", "0", "-hide_banner", "-loglevel", "error", "-f", "concat", "-i", slidesTxtFile, "-threads", config.ThreadCount, "-y", "-strict", "-2", "-t", fmt.Sprint(durationReal), "-c:v", "libx264", "-aq-mode", "1", "-tune", "stillimage", "-crf", "0", result.VideoPath).Output()
 	if err != nil {
 		return modules.Video{}
 	}
