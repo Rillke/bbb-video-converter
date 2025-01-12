@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"strings"
 	"sync"
 	"time"
 )
@@ -71,17 +70,7 @@ func (c *Converter) Run(config config.Data) error {
 		}
 		log.Println("Added caption data to video")
 	}
-	if strings.HasSuffix(config.OutputFile, ".webm") {
-		err = modules.ProcessToEndExtension(fullVideo, config)
-		if err != nil {
-			return err
-		}
-	} else {
-		err = copyFile(fullVideo.VideoPath, config.OutputFile)
-		if err != nil {
-			return err
-		}
-	}
+	err = copyFile(fullVideo.VideoPath, config.OutputFile)
 	return nil
 }
 

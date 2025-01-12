@@ -11,7 +11,7 @@ import (
 )
 
 func CombinePresentationWithWebcams(presentation Video, webcam Video, config config.Data) (Video, error) {
-	videoPath := path.Join(config.WorkingDir, "out.mp4")
+	videoPath := path.Join(config.WorkingDir, "out.webm")
 	if presentation.VideoPath == "" && webcam.VideoPath == "" {
 		return Video{}, errors.New("the presentation does not contain any renderable inputs (slides, deskshares or webcams/audio)")
 	}
@@ -51,7 +51,7 @@ func copyWebcamsVideo(webcam Video, videoPath string, config config.Data) error 
 }
 
 func copyWebcamsAudioToPresentation(presentation Video, webcam Video, videoPath string, config config.Data) error {
-	_, err := util.ExecuteCommand("ffmpeg", "-hide_banner", "-loglevel", "error", "-threads", config.ThreadCount, "-i", presentation.VideoPath, "-i", webcam.VideoPath, "-c:v", "copy", "-c:a", "aac", "-map", "0:0", "-map", "1:1", "-shortest", "-preset", "ultrafast", "-y", videoPath).Output()
+	_, err := util.ExecuteCommand("ffmpeg", "-hide_banner", "-loglevel", "error", "-threads", config.ThreadCount, "-i", presentation.VideoPath, "-i", webcam.VideoPath, "-c:v", "copy", "-c:a", "libopus", "-map", "0:0", "-map", "1:1", "-shortest", "-preset", "ultrafast", "-y", videoPath).Output()
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func stackWebcamsToPresentation(presentation Video, webcam Video, videoPath stri
 	if int(height)%2 == 1 {
 		height += 1
 	}
-	_, err := util.ExecuteCommand("ffmpeg", "-hide_banner", "-loglevel", "error", "-threads", config.ThreadCount, "-i", presentation.VideoPath, "-i", webcam.VideoPath, "-filter_complex", "[0:v]pad=width="+fmt.Sprint(width)+":height="+fmt.Sprint(height)+":color=white[p];[p][1:v]overlay=x="+fmt.Sprint(presentation.Width)+":y=0[out]", "-map", "[out]", "-map", "1:1", "-c:a", "aac", "-shortest", "-y", videoPath).Output()
+	_, err := util.ExecuteCommand("ffmpeg", "-hide_banner", "-loglevel", "error", "-threads", config.ThreadCount, "-i", presentation.VideoPath, "-i", webcam.VideoPath, "-filter_complex", "[0:v]pad=width="+fmt.Sprint(width)+":height="+fmt.Sprint(height)+":color=white[p];[p][1:v]overlay=x="+fmt.Sprint(presentation.Width)+":y=0[out]", "-map", "[out]", "-map", "1:1", "-r:v", "15", "-c:v", "librav1e", "-qp", "80", "-speed", "4", "-tile-columns", "2", "-tile-rows", "2", "-c:a", "libopus", "-shortest", "-y", videoPath).Output()
 	if err != nil {
 		return err
 	}

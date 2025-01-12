@@ -55,7 +55,7 @@ func renderSlides(config config.Data, duration int) modules.Video {
 		start = time.Now()
 		video := renderVideo(presentation, config, infos, duration)
 		end = time.Now().Sub(start)
-		log.Println("slide.mp4 creation took: " + fmt.Sprint(end))
+		log.Println("slide.webm creation took: " + fmt.Sprint(end))
 		return video
 	}
 	return modules.Video{}
@@ -87,8 +87,8 @@ func renderVideo(presentation Presentation, config config.Data, infos map[float6
 		return modules.Video{}
 	}
 	result := modules.Video{}
-	result.VideoPath = path.Join(config.WorkingDir, "slides.mp4")
-	_, err = util.ExecuteCommand("ffmpeg", "-safe", "0", "-hide_banner", "-loglevel", "error", "-f", "concat", "-i", slidesTxtFile, "-threads", config.ThreadCount, "-y", "-strict", "-2", "-crf", "22", "-preset", "ultrafast", "-t", fmt.Sprint(durationReal), "-c:v", "libx264", "-pix_fmt", "yuv420p", result.VideoPath).Output()
+	result.VideoPath = path.Join(config.WorkingDir, "slides.webm")
+	_, err = util.ExecuteCommand("ffmpeg", "-safe", "0", "-hide_banner", "-loglevel", "error", "-f", "concat", "-i", slidesTxtFile, "-threads", config.ThreadCount, "-y", "-t", fmt.Sprint(durationReal), "-c:v", "libaom-av1", "-crf", "0", "-b:v", "0", "-cpu-used", "8", "-strict", "experimental", result.VideoPath).Output()
 	if err != nil {
 		return modules.Video{}
 	}

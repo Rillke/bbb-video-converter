@@ -49,7 +49,7 @@ func CreateCaptions(config config.Data) ([]Caption, error) {
 }
 
 func AddCaption(captions []Caption, config config.Data, fullVideo Video) error {
-	tmpFile := path.Join(config.WorkingDir, "video.caption.tmp.mp4")
+	tmpFile := path.Join(config.WorkingDir, "video.caption.tmp.webm")
 	cmd := []string{"-hide_banner", "-loglevel", "error", "-threads", config.ThreadCount, "-i", fullVideo.VideoPath}
 	for _, v := range captions {
 		cmd = append(cmd, "-i", v.File)
